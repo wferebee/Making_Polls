@@ -24,20 +24,21 @@ export default class MainCard extends Component {
       hasVoted: false,
       totalVotes: 0,
       choices: {
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
+        a: 18,
+        b: 2,
+        c: 12,
+        d: 6,
       },
     };
     this.handleClick = this.handleClick.bind(this);
     this.toggleActive = this.toggleActive.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.tallyVotes = this.tallyVotes.bind(this);
+    this.codex = this.codex.bind(this);
   }
 
-  componentDidMount() {
-    this.setState({
+ componentDidMount() {
+     this.setState({
       title: "Willie's First Poll",
       subTitle: "still working out the kinks",
       displayDebrief: false,
@@ -46,7 +47,17 @@ export default class MainCard extends Component {
       finalChoice: "",
       displayData: false,
       disableChoices: false,
+      hasVoted: false,
+      totalVotes: 0,
+      choices: {
+        a: 18,
+        b: 2,
+        c: 12,
+        d: 6,
+      },
     });
+    //console.log(this.state.choices[1]);
+    
   }
 
   handleClick = async (e) => {
@@ -71,19 +82,48 @@ export default class MainCard extends Component {
           finalChoice: this.state.active,
         });
     await this.tallyVotes(this.state.finalChoice);
+    Data(this.state.choices)
+   
   };
 
+  codex = (str) => {
+    let idxmin;
+
+    switch (str) {
+      case "1":
+        idxmin = "a";
+        break;
+      case "2":
+        idxmin = "b";
+        break;
+      case "3":
+        idxmin = "c";
+        break;
+      case "4":
+        idxmin = "d";
+        break;
+      default:
+        break;
+    }
+    return idxmin;
+  };
   tallyVotes = async (string) => {
     let idx = string[7];
+
+    let idxmin = this.codex(idx);
+
     this.state.finalChoice === ""
       ? await this.setState({ hasVoted: false })
       : await this.setState({
           hasVoted: true,
           totalVotes: this.state.totalVotes + 1,
         });
-    console.log("idx: " + idx);
+    //console.log("idx: " + idx);
     await this.setState({
-      choices: { ...this.state.choices, [idx]: +1 },
+      choices: {
+        ...this.state.choices,
+        [`${idxmin}`]: this.state.choices[`${idxmin}`] + 1,
+      },
     });
     console.log(this.state.choices);
   };
@@ -111,12 +151,12 @@ export default class MainCard extends Component {
           {this.state.displayDebrief && (
             <Debrief debriefMessage={this.state.debriefMessage} />
           )}
-          <Data/>
+          
           <Results
             handleSubmit={this.handleSubmit}
             displayData={this.state.displayData}
+            choices={this.state.choices}
           />
-
         </div>
       </>
     );
